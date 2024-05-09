@@ -19,7 +19,11 @@ def contact():
 def stream_text():
   def generate():
     from g4f.client import Client
-    client = Client()  # Assuming g4f is installed
+    #from g4f.Provider import RetryProvider, Phind, FreeChatgpt, Liaobots
+    client = Client(
+    #provider=RetryProvider([Phind, FreeChatgpt, Liaobots, OpenAi], shuffle=False)
+    )
+
     stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": "Write an article on ai"}],
@@ -27,8 +31,14 @@ def stream_text():
     )
 
     #print("\n\nAi Answer\n")
+    #for chunk in stream:
+     #   if chunk.choices[0].delta.content:
+    #        print(chunk.choices[0].delta.content or "", end="")
+           
     for chunk in stream:
-      if chunk.choices[0].delta.content:
-        yield f"data: {chunk.choices[0].delta.content}\n\n"
-
+        if chunk.choices[0].delta.content:
+            yield f"data: {chunk.choices[0].delta.content}\n\n"
+        elif not chunk.choices[0].delta.content:  # Assuming empty content indicates end
+            break
+    
   return Response(generate(), mimetype="text/event-stream")
