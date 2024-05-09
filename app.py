@@ -26,11 +26,15 @@ def stream_generator(stream):
   for chunk in stream:
     if chunk.choices[0].delta.content:
       yield f"data: {chunk.choices[0].delta.content}\n\n"
-  yield "data: VishalSinghFinished0034\n\n"
+  yield "data: endfilewithcode0034\n\n"
 
 def generate_response_stream():
     from g4f.client import Client
-    client = Client()
+    from g4f.Provider import OpenaiChat
+    client = Client(
+       provider=OpenaiChat
+    )
+    #client = Client()
     stream = client.chat.completions.create(
       model="gpt-3.5-turbo",
       messages=[{"role": "user", "content": "Write an article on ai"}],
