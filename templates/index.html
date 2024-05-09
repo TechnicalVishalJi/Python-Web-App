@@ -6,10 +6,18 @@
     <title>Home</title>
 
     <script>
-    var eventSource = new EventSource("/stream");
-    eventSource.onmessage = function(event) {
-      document.getElementById("text-stream").innerHTML += event.data;
-    };
+
+        var eventSource;  // Move eventSource declaration outside the function
+        var generateButton = document.getElementById("generate-button");
+        generateButton.addEventListener("click", function() {
+          if (eventSource) {
+            eventSource.close();  // Close existing connection if any
+          }
+          eventSource = new EventSource("/stream");  // Create a new EventSource
+          eventSource.onmessage = function(event) {
+            document.getElementById("text-stream").innerHTML += event.data;
+          };
+        });
         </script>
 </head>
 <body>
@@ -20,6 +28,7 @@
     <p>Hello World, I am Vishal Singh</p>
 
     <h1>Live GPT-3.5 Article</h1>
+    <button id="generate-button">Generate Article</button>
   <div id="text-stream"></div>
 </body>
 </html>
