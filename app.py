@@ -32,4 +32,3 @@ def stream_text():
         yield f"data: {chunk.choices[0].delta.content}\n\n"
 
   return Response(generate(), mimetype="text/event-stream")
-    
