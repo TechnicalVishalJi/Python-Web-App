@@ -32,7 +32,7 @@ def generate_response_stream():
     from g4f.client import Client
     client = Client()
     stream = client.chat.completions.create(
-      model="gpt-4",
+      model="gpt-3.5-turbo",
       messages=[{"role": "user", "content": "Write an article on ai"}],
       stream=True
     )
