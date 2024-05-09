@@ -11,6 +11,8 @@ stream = client.chat.completions.create(
     stream=True
 
 )
+
+print("\n\nAi Answer\n")
 for chunk in stream:
     if chunk.choices[0].delta.content:
         print(chunk.choices[0].delta.content or "", end="")
