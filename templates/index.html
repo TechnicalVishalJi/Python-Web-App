@@ -8,20 +8,7 @@
      <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
     
-    <script>
-
-        var eventSource;  // Move eventSource declaration outside the function
-        var generateButton = document.getElementById("generate-button");
-        generateButton.addEventListener("click", function() {
-          if (eventSource) {
-            eventSource.close();  // Close existing connection if any
-          }
-          eventSource = new EventSource("/stream");  // Create a new EventSource
-          eventSource.onmessage = function(event) {
-            document.getElementById("text-stream").innerHTML += event.data;
-          };
-        });
-        </script>
+    
 </head>
 <body>
     <h1>Home Page</h1>
