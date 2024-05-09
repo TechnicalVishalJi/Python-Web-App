@@ -1,13 +1,13 @@
 from g4f.client import Client
-from g4f.Provider import RetryProvider, Phind, FreeChatgpt, Liaobots
+#from g4f.Provider import RetryProvider, Phind, FreeChatgpt, Liaobots
 
 client = Client(
-provider=RetryProvider([Phind, FreeChatgpt, Liaobots], shuffle=False)
+#provider=RetryProvider([Phind, FreeChatgpt, Liaobots, OpenAi], shuffle=False)
 )
 
 stream = client.chat.completions.create(
     model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": "How to create a flask app"}],
+    messages=[{"role": "user", "content": "Write an article on ai"}],
     stream=True
 
 )
