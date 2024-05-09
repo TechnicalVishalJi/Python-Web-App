@@ -18,6 +18,7 @@ def contact():
 @app.route("/stream")
 def stream_text():
   def generate():
+    from g4f.client import Client
     client = Client()  # Assuming g4f is installed
     stream = client.chat.completions.create(
         model="gpt-3.5-turbo",
