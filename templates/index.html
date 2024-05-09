@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+
+    <script>
+    var eventSource = new EventSource("/stream");
+    eventSource.onmessage = function(event) {
+      document.getElementById("text-stream").innerHTML += event.data;
+    };
+        </script>
 </head>
 <body>
     <h1>Home Page</h1>
@@ -11,5 +18,8 @@
     <a href="{{ url_for('contact') }}">Contact</a>
 
     <p>Hello World, I am Vishal Singh</p>
+
+    <h1>Live GPT-3.5 Article</h1>
+  <div id="text-stream"></div>
 </body>
 </html>
