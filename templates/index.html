@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-
-     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
-    
-    
 </head>
 <body>
     <h1>Home Page</h1>
@@ -17,31 +12,8 @@
 
     <p>Hello World, I am Vishal Singh</p>
 
-    <h1>Live GPT-3.5 Article</h1>
-    <button id="generate-button">Generate Article</button>
-  <div id="text-stream"></div>
-
     <script>
-
-        var eventSource;  // Move eventSource declaration outside the function
-        var generateButton = document.getElementById("generate-button");
-        generateButton.addEventListener("click", function() {
-          if (eventSource) {
-            eventSource.close();  // Close existing connection if any
-          }
-          eventSource = new EventSource("/stream");  // Create a new EventSource
-          eventSource.onmessage = function(event) {
-              let endWord = "endfilewithcode0034";
-              if (!event.data.endsWith(endWord)) {
-                document.getElementById("text-stream").innerHTML += event.data;
-              } else {      
-                eventSource.close();
-                let ending = event.data.slice(0, -(endWord.length));
-                document.getElementById("text-stream").innerHTML += ending;         
-                //console.log(ending, "finished");
-              }             
-          };
-        });
+    window.location = "{{ url_for('ai') }}";
     </script>
 </body>
 </html>

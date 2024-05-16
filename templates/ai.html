@@ -1,0 +1,1092 @@
+<html>
+<head>
+   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+   <title>AI - Vishal Singh</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/stackoverflow-dark.min.css">
+   <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+   <script>eruda.init();</script>
+   <style>
+     
+     @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+     
+     * {
+         line-height:1.5;
+         font-family:'Varela Round', sans-serif;
+     }
+
+      .highlight-code-container {
+          position: relative;
+      }
+      img{
+         width: 100%;
+      }
+     
+     .hljs{
+        border-radius:10px;
+     }
+      html, body {
+         /* Reset styles for margins and padding */
+         margin: 0;
+         padding: 0;
+         /* display:flex;
+  flex-direction:column;*/
+         width: 100%;
+         height: 100%;
+         background-color: white;
+         /* Set body height to 100 viewport height */
+      }
+
+      #promptBox {
+         width: 100%;
+         /* Adjust width as needed */
+         min-height: 70px;
+         /* Minimum height for multiline input */
+         box-sizing: border-box;
+         padding: 15px 40px 15px 15px;
+         border: 1px solid orange;
+         position: relative;
+         /* Make textarea absolutely positioned */
+         /* Position it at the bott*/
+         height: auto;
+         /* Allow textarea to grow vertically */
+         border-radius: 10px;
+         font-family: inherit;
+         /* Inherit font from parent element */
+         font-size: 16px;
+         resize: vertical;
+         /* Allow vertical resizing */
+         outline: none;
+         /* Remove default outline */
+         box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+         /* Subtle shadow effect */
+         transition: all 0.2s ease-in-out;
+         /* Smoother transition on focus */
+      }
+
+      #promptBox:focus {
+         border-color: rgb(255,165,0);
+         /* Change border color on focus */
+         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+         /* Enhance shadow on focus */
+      }
+
+      #promptBox::placeholder {
+         color: orange;
+         /* Adjust placeholder color */
+         font-weight: lighter;
+         /* Lighter weight for placeholder */
+      }
+      #promptcontainer {
+         /* Adjust width as needed *//* Minimum height for multiline input */
+         position: fixed;
+         bottom: 0;
+         background-color: white;
+         right: 0;
+         left: 0;
+         z-index: 999;
+         padding: 10px;
+         /* Make textarea absolutely positioned *//* Position it at the bottom */
+         box-shadow: 0 0 10px rgba(255, 165, 0, 0.2);
+      }
+
+      #submitBtn {
+         position: absolute;
+         bottom: 30px;
+         right: 20px;
+         cursor: pointer;
+        
+         width: 25px;
+      }
+
+
+      #container {
+         height: 70vh;
+         display: flex;
+         /* Enable flexbox layout */
+         justify-content: center;
+         align-items: center;
+         background-color: white;
+      }
+      .resultBox {
+         max-width: 800px;
+         margin: 5px auto;
+         padding: 5px 20px;
+         border-radius: 0px;
+         background-color:white;/* rgba(255,165, 0, 0.03);*/
+      }
+      .question-box {
+         /*margin-bottom: 20px;*/
+      }
+      .answer-box {
+         /*background-color: #e0e0e0;
+        padding: 10px;
+        border-radius: 4px;*/
+      }
+      .textBox {
+         margin: -15px 0 30px 20px;
+      }
+      #bottomBox {
+         height: 140px;
+      }
+
+      .copy-btn {
+         width: 16px;
+         height: 16px;
+         cursor: pointer;
+         margin: 0 0 20px 20px;
+      }
+
+      .copy-code-btn {
+         width: 16px;
+         height: 16px;
+         cursor: pointer;
+         margin: -40px 0px 20px -25px;
+
+      }
+
+      .newaddedimages {
+         width: calc(100% - 60px);
+      }
+
+      #loadingResults {
+         display: none;
+
+      }
+
+      .dropdown {
+         position: relative;
+         display: inline-block;
+      }
+
+      .dropdown-button {
+         background-color: white;
+         border: 1px solid orange;
+         color: black;
+         padding: 10px 15px;
+         font-size: 16px;
+         cursor: pointer;
+         border-radius: 5px;
+         /* Added position: relative; for stacking */
+         position: relative;
+         margin: 0 0 10px 0;
+      }
+
+      .dropdown-content {
+         display: none;
+         position: absolute;
+         border: 1px solid orange;
+         background-color: white;
+         border-radius: 5px;
+         min-width: 150px;
+         /* Adjust width as needed */
+         /*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+ */ z-index: 1;
+         /* Removed top property */
+         /* Added the following properties for stacking on top */
+         bottom: 110%;
+         /* Align to the top of the button */
+         left: 0%;
+         /* Align to the left of the button */
+      }
+
+      .dropdown-content ul {
+         list-style: none;
+         margin: 0;
+         padding: 0;
+      }
+
+      .dropdown-content li {
+         padding: 10px 15px;
+         cursor: pointer;
+         transition: 0.3s;
+      }
+
+      .dropdown:hover .dropdown-content {
+         display: block;
+         /* Removed animation as stacking doesn't require sliding */
+      }
+
+      .dropdown-content li:hover {
+         background-color: #ddd;
+      }
+      
+
+
+#buttons-container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+      
+      
+      #popup-warning {
+         position: fixed;
+      }
+
+      .boxed-text{
+         background-color:#EAEAEA;
+         padding:0 5px;
+         border-radius:5px;
+      }
+
+.image-change-btn{
+    text-align: center;
+    background-color: black;
+    width: 100%;
+    padding:5px;
+    color:white;
+    margin:1px 0 0 0;
+    cursor:pointer;
+    box-sizing:border-box;
+    border-radius: 0 0 10px 10px;
+}
+  
+.toast { 
+    position: fixed; 
+    top: 25px; 
+    right: 25px; 
+    max-width: 300px; 
+    background: #fff; 
+    padding: 0.5rem; 
+    border-radius: 4px; 
+    box-shadow: -1px 1px 10px
+        rgba(0, 0, 0, 0.3); 
+    z-index: 1023; 
+    /*animation: slideInRight 0.3s 
+            ease-in-out forwards, 
+        fadeOut 0.5s ease-in-out 
+            forwards 3s; */
+    transform: translateX(110%); 
+} 
+  
+.toast.closing { 
+    animation: slideOutRight 0.5s 
+        ease-in-out forwards; 
+} 
+  
+.toast-progress { 
+    position: absolute; 
+    display: block; 
+    bottom: 0; 
+    left: 0; 
+    height: 4px; 
+    width: 100%; 
+    background: #b7b7b7; 
+    animation: toastProgress 3s 
+        ease-in-out forwards; 
+} 
+  
+.toast-content-wrapper { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+} 
+  
+.toast-icon { 
+    padding: 0.35rem 0.5rem; 
+    font-size: 1.5rem; 
+} 
+  
+.toast-message { 
+    flex: 1; 
+    font-size: 0.9rem; 
+    color: #000000; 
+    padding: 0.5rem; 
+} 
+  
+.toast.toast-success { 
+    background: #95eab8; 
+} 
+.toast.toast-success .toast-progress { 
+    background-color: #2ecc71; 
+} 
+  
+.toast.toast-danger { 
+    background: #efaca5; 
+} 
+  
+.toast.toast-danger .toast-progress { 
+    background-color: #e74c3c; 
+} 
+  
+.toast.toast-info { 
+    background: #bddaed; 
+} 
+  
+.toast.toast-info .toast-progress { 
+    background-color: #3498db; 
+} 
+  
+.toast.toast-warning { 
+    background: #ead994; 
+} 
+  
+.toast.toast-warning .toast-progress { 
+    background-color: #f1c40f; 
+} 
+  
+@keyframes slideInRight { 
+    0% { 
+        transform: translateX(110%); 
+    } 
+  
+    75% { 
+        transform: translateX(-10%); 
+    } 
+  
+    100% { 
+        transform: translateX(0%); 
+    } 
+} 
+  
+@keyframes slideOutRight { 
+    0% { 
+        transform: translateX(0%); 
+    } 
+  
+    25% { 
+        transform: translateX(-10%); 
+    } 
+  
+    100% { 
+        transform: translateX(110%); 
+    } 
+} 
+  
+@keyframes fadeOut { 
+    0% { 
+        opacity: 1; 
+    } 
+  
+    100% { 
+        opacity: 0; 
+    } 
+} 
+  
+@keyframes toastProgress { 
+    0% { 
+        width: 100%; 
+    } 
+  
+    100% { 
+        width: 0%; 
+    } 
+}
+
+      #imageInput, #file-label {
+          display: none; /* Hide the default file input */
+      }
+
+
+      .copy-code-btn {
+          position: absolute; 
+          top: 40px; 
+          right:0;
+          height: auto;
+          width: auto; 
+          padding: 2px 1rem; 
+          color: white; 
+          background-color: #000000; 
+          border: 1px solid grey; 
+          border-radius: 0 10px 0 10px;
+      }
+      .generated-image{
+          width:100%;
+          height:auto;
+          border-radius:10px;
+      }
+   </style>
+</head>
+<body>
+   <input type="hidden" id="resultBoxHidden">
+   <div id="container">
+      <div id="welcomeBox">
+         <center>
+            <img src="{{image_paths[0]}}" style="height: 40px; width: 40px;" alt="logo">
+            <h3>How can I help you today?</h3>
+         </center>
+      </div>
+   </div>
+
+   <div id="promptcontainer">
+     <div id="buttons-container">
+      <div class="dropdown">
+         <button class="dropdown-button">GPT 3.5</button>
+         <div class="dropdown-content" id="dropdownContent">
+            <ul>
+               <li>GPT 3.5</li>
+               <li>GPT 4</li>
+               <li>Gemini Pro</li>
+               <li>Copilot</li>
+               <li>Dall-E 3</li>
+               <li>Gemini Image</li>
+            </ul>
+         </div>
+      </div>
+        
+        <label for="imageInput" class="dropdown-button" id="file-label"><svg width="1.4rem" height="1.4rem" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" stroke="#000000" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect x="0" fill="none" width="24" height="24"></rect> <g> <path d="M23 4v2h-3v3h-2V6h-3V4h3V1h2v3h3zm-8.5 7c.828 0 1.5-.672 1.5-1.5S15.328 8 14.5 8 13 8.672 13 9.5s.672 1.5 1.5 1.5zm3.5 3.234l-.513-.57c-.794-.885-2.18-.885-2.976 0l-.655.73L9 9l-3 3.333V6h7V4H6c-1.105 0-2 .895-2 2v12c0 1.105.895 2 2 2h12c1.105 0 2-.895 2-2v-7h-2v3.234z"></path> </g> </g></svg></label>
+      <input type="file" id="imageInput" accept="image/*">
+       
+       <div class="dropdown-button" onclick="deleteUserHistory()">
+           New Chat
+       </div>
+     </div>
+      <center>
+         <textarea id="promptBox" rows="1" placeholder="Type your query here..."></textarea>
+         <svg id="submitBtn" onclick="runQuery()" width="25px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <path d="M13.7612096,12.010246 L3.00114069,10.9260828 L3.00000002,4.07390726 C2.9999013,3.48090338 3.4805459,3.00009873 4.07354978,3.00000001 C4.24030125,2.99997226 4.40476746,3.03878301 4.55391451,3.11335654 L20.4062223,11.0395104 C20.9366211,11.3047098 21.1516077,11.9496696 20.8864083,12.4800684 C20.78252,12.6878448 20.6140494,12.8563254 20.4062791,12.960226 L4.55631145,20.8863826 C4.02592835,21.1516134 3.38095585,20.936665 3.11572505,20.4062819 C3.04118163,20.2572172 3.00236221,20.092846 3.0023401,19.9261816 L3.00143069,13.0735399 L13.7612096,12.010246 Z" id="Shape"></path>
+         </svg>
+      </center>
+   </div>
+
+
+   <div id="resultsArea"></div>
+
+   <div id="loadingResults">
+      <div class="resultBox">
+         <div class="question-box">
+            <h3>You</h3>
+            <div class="textBox">
+               <div id="prompt">
+
+               </div>
+            </div>
+         </div>
+         <div class="answer-box">
+            <h3 id="nameOfAi">GPT 3.5</h3>
+            <div class="textBox">
+               <img style="margin:20px 0 0 20px; width: 30px;" src="{{image_paths[2]}}" alt="loading..">
+            </div>
+         </div>
+      </div>
+   </div>
+   <div id="popup-warning">
+        <div class="toast-overlay" id="toast-overlay"></div>   
+     </div>
+   <div id="bottomBox"></div>
+ 
+
+  
+
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+   <script>
+
+       //showToast("message", "type from danger, success, warning, info", duration in sec);
+       
+        var eventSource;  // Move eventSource declaration outside the function
+        var welcomeBoxRemoved = false;
+      let fileLabel = document.getElementById('file-label');
+      let fileLabelIcon = '<svg width="1.4rem" height="1.4rem" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000" stroke="#000000" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <rect x="0" fill="none" width="24" height="24"></rect> <g> <path d="M23 4v2h-3v3h-2V6h-3V4h3V1h2v3h3zm-8.5 7c.828 0 1.5-.672 1.5-1.5S15.328 8 14.5 8 13 8.672 13 9.5s.672 1.5 1.5 1.5zm3.5 3.234l-.513-.57c-.794-.885-2.18-.885-2.976 0l-.655.73L9 9l-3 3.333V6h7V4H6c-1.105 0-2 .895-2 2v12c0 1.105.895 2 2 2h12c1.105 0 2-.895 2-2v-7h-2v3.234z"></path> </g> </g></svg>';
+      var aiName = "GPT 3.5";
+      let nameOfAiInTitle = document.getElementById("nameOfAi");
+      let conversationId = null;
+      let history = [];
+      let objectOfImages = {};
+      let totalResponse = "";
+      let minReqCharsInResponse = 0;     
+      let responseBuffer = "";
+       let responseStreamStarted = false;
+       let imgUploadedByUser = false;
+       let linkToUserImage = "";
+       let icon = { 
+           danger: 
+          '<svg width="1.15rem" height="1.15rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M5.31171 10.7615C8.23007 5.58716 9.68925 3 12 3C14.3107 3 15.7699 5.58716 18.6883 10.7615L19.0519 11.4063C21.4771 15.7061 22.6897 17.856 21.5937 19.428C20.4978 21 17.7864 21 12.3637 21H11.6363C6.21356 21 3.50217 21 2.40626 19.428C1.31034 17.856 2.52291 15.7061 4.94805 11.4063L5.31171 10.7615Z" stroke="#1C274C" stroke-width="1.7280000000000002"></path> <path d="M12 8V13" stroke="#1C274C" stroke-width="1.7280000000000002" stroke-linecap="round"></path> <circle cx="12" cy="16" r="1" fill="#1C274C"></circle> </g></svg>', 
+           warning: 
+           '<svg width="1.15rem" height="1.15rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M5.31171 10.7615C8.23007 5.58716 9.68925 3 12 3C14.3107 3 15.7699 5.58716 18.6883 10.7615L19.0519 11.4063C21.4771 15.7061 22.6897 17.856 21.5937 19.428C20.4978 21 17.7864 21 12.3637 21H11.6363C6.21356 21 3.50217 21 2.40626 19.428C1.31034 17.856 2.52291 15.7061 4.94805 11.4063L5.31171 10.7615Z" stroke="#1C274C" stroke-width="1.7280000000000002"></path> <path d="M12 8V13" stroke="#1C274C" stroke-width="1.7280000000000002" stroke-linecap="round"></path> <circle cx="12" cy="16" r="1" fill="#1C274C"></circle> </g></svg>', 
+           success: 
+           '<svg fill="#000000" height="1.15rem" width="1.15rem" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-10.24 -10.24 532.48 532.48" xml:space="preserve" stroke="#000000" stroke-width="10.751999999999999"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <g> <path d="M437.016,74.984c-99.979-99.979-262.075-99.979-362.033,0.002c-99.978,99.978-99.978,262.073,0.004,362.031 c99.954,99.978,262.05,99.978,362.029-0.002C536.995,337.059,536.995,174.964,437.016,74.984z M406.848,406.844 c-83.318,83.318-218.396,83.318-301.691,0.004c-83.318-83.299-83.318-218.377-0.002-301.693 c83.297-83.317,218.375-83.317,301.691,0S490.162,323.549,406.848,406.844z"></path> <path d="M368.911,155.586L234.663,289.834l-70.248-70.248c-8.331-8.331-21.839-8.331-30.17,0s-8.331,21.839,0,30.17 l85.333,85.333c8.331,8.331,21.839,8.331,30.17,0l149.333-149.333c8.331-8.331,8.331-21.839,0-30.17 S377.242,147.255,368.911,155.586z"></path> </g> </g> </g> </g></svg>', 
+           info: 
+           '<svg width="1.15rem" height="1.15rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="12" cy="12" r="10" stroke="#1C274C" stroke-width="2.088"></circle> <path d="M12 7V13" stroke="#1C274C" stroke-width="2.088" stroke-linecap="round"></path> <circle cx="12" cy="16" r="1" fill="#1C274C"></circle> </g></svg>',
+       };; 
+
+      retrieveHistory();
+      if(getCookie("newUser") != "true"){
+         showToast("Welcome to Vishal's AI chatbot", "success", 3)
+         setTimeout(() => {
+                showToast("Don't share any personal information with AI", "warning", 6)
+         }, 5000);
+         setCookie("newUser", "true", 365);
+      }
+         
+       
+        const dropdownButton = document.querySelector('.dropdown-button');
+      const dropdownContent = document.querySelector('.dropdown-content');
+      const listItems = document.querySelectorAll('.dropdown-content li');
+
+      dropdownButton.addEventListener('click', () => {
+         if (dropdownContent.style.display == "block") {
+            dropdownContent.style.display = "none";
+         } else {
+            dropdownContent.style.display = "block";
+         }
+      });
+
+      listItems.forEach(item => {
+         item.addEventListener('click', () => {
+            setTimeout(function () {
+               dropdownContent.style.display = "none";
+               aiName = item.textContent;
+               dropdownButton.textContent = aiName;
+               if(aiName == "Gemini Pro" || aiName == "GPT 4"){
+                  document.getElementById("file-label").style.display = "block";
+               }else{
+                  document.getElementById("file-label").style.display = "none";
+               }
+               /*if (aiName == "GPT 3.5") {
+                  apiUrl = "gpt35.php";
+                  
+               } else if (aiName == "GPT 4") {
+                  apiUrl = "gpt4.php";
+                   
+               } else if (aiName == "Gemini Pro") {
+                  apiUrl = "geminipro.js";
+                  
+               } else if (aiName == "MidJourney") {
+                  apiUrl = "midj.php";
+                  
+               } else if (aiName == "Copilot") {
+                  apiUrl = "copilot.php";                          
+                  
+               }*/
+               nameOfAiInTitle.innerText = aiName;
+            },
+               200);
+         });
+      });
+
+       const fileInput = document.getElementById('imageInput');
+
+         fileInput.addEventListener('change', function() {
+             const file = fileInput.files[0];
+
+             if (file) {
+                showToast("Image added!", "success", 3);
+                
+                 const formData = new FormData();
+                 formData.append('image', file);
+
+                 fetch('/uploadimage', {
+                     method: 'POST',
+                     body: formData
+                 })
+                 .then(response => {
+                     if (response.ok) {
+                         return response.text();
+                     }
+                     throw new Error('Error uploading image');
+                 })
+                 .then(data => {
+                    if(data.startsWith("../uploads/img/")){
+                       linkToUserImage = data;
+                       imgUploadedByUser = true;
+                       let longer = "width";
+                       const img = new Image();
+                       const reader = new FileReader();
+
+                       reader.onload = function(event) {
+                           img.src = event.target.result;
+                       };
+
+                       img.onload = function() {
+                           const originalWidth = img.width;
+                           const originalHeight = img.height;
+
+                           if (originalWidth > originalHeight) {
+                               longer = "width";
+                           } else if (originalHeight > originalWidth) {
+                               longer = "height";
+                           }
+                       };
+
+                       reader.readAsDataURL(file);
+                       fileLabel.innerHTML = '<img src="'+linkToUserImage+'" style="'+longer+':1.4rem;" alt="prompt image">';
+                    }else{
+                       showToast(data, "danger", 3)
+                    }
+                     
+                     //console.log(data);
+                     // Handle server response
+                 })
+                 .catch(error => {
+                     showToast('Error: '+error, 'danger', 3);
+                     // Handle errors
+                 });
+             }else{showToast("No image added!", "danger", 3);}
+         });
+
+   function runQuery() {  
+           if (welcomeBoxRemoved == false) {
+              document.getElementById('container').style.display = "none";
+              welcomeBoxRemoved = true;
+           }
+           var promptBox = document.getElementById('promptBox');
+           var prompt = promptBox.value;
+           promptBox.value = "";
+           let loading = document.getElementById("loadingResults");
+           loading.querySelector("#prompt").innerHTML = imgUploadedByUser ? prompt+"<br><br><img width='40%' src='" + linkToUserImage +"' alt='prompt-image'>" : prompt;
+           document.getElementById("loadingResults").style.display = "block";
+           setTimeout(function () {
+              loading.scrollIntoView({
+                 behavior: 'smooth'
+              });
+           }, 400);
+           totalResponse = "";
+           minReqCharsInResponse = 0;
+           responseStreamStarted = false;
+           if (aiName == "GPT 3.5") {
+              callGPT35(prompt);
+           } else if (aiName == "GPT 4") {
+              callGPT4(prompt);
+           } else if (aiName == "Gemini Pro") {
+              callGeminiPro(prompt);
+           } else if (aiName == "Copilot") {
+                callCopilot(prompt);
+           } else if (aiName == "Dall-E 3") {
+              callDallE(prompt);
+           } else if (aiName == "Gemini Image") {
+              callGeminiImage(prompt);
+           }
+   }
+
+   
+       
+       function addNewResponseBox(prompt, nameOfAi) {
+           var newDiv = document.createElement('div');
+           newDiv.className = "resultBox";
+           newDiv.innerHTML = '<div class="question-box"><h3>You</h3> <p onclick="setTextToTextarea(this)" class="textBox">' + prompt + '</p></div><div class="answer-box"><h3 class="nameOfAi">'+nameOfAi+'</h3><div class="textBox"></div><img class="copy-btn" onclick="copyText(event)" src="{{image_paths[1]}}" alt="Copy Icon"></div>';
+           newDiv.innerHTML += '<div style="height: 5px; width: calc(100% + 40px); background-color: rgba(0,0,0,0.03); margin: 0 -20px;"></div>';
+           document.getElementById("loadingResults").style.display = "none";
+           document.getElementById('resultsArea').appendChild(newDiv);
+          return newDiv;
+       }
+
+       
+       
+       function addModifiedResponse(response, responseBox, final=false) {
+          if((response.endsWith("~") || response.endsWith("~n")) && !final){
+             responseBuffer += response;
+          }else{
+             response1 = (responseBuffer + response).replace(/~n~/g, "\n");
+             responseBuffer = "";
+             totalResponse += response1;
+          }
+          //responseMarked = marked.parse(totalResponse);
+          if((totalResponse.length > minReqCharsInResponse) || final){             
+             let parsedText = marked.parse(totalResponse);
+             responseBox.querySelector(".answer-box").querySelector(".textBox").innerHTML = parsedText;
+             responseBox.querySelectorAll('code').forEach((block) => {
+                      if(block.innerText.includes("\n")){
+                         hljs.highlightElement(block);
+                         if(final){
+                                  const div = block.parentNode.parentNode; // Parent of <code> is <pre>, parent of <pre> is the container div
+                                  const copyButton = document.createElement('button');
+                                  copyButton.classList.add('copy-code-btn');
+                                  copyButton.onclick = () => {
+                                        const codeText = block.textContent;
+                                        navigator.clipboard.writeText(codeText).then(() => {
+                                            copyButton.textContent = "Copied!";
+                                            setTimeout(() => {
+                                                copyButton.textContent = 'Copy';
+                                            }, 2000); 
+                                        }).catch((err) => {
+                                            copyButton.textContent = "Can't copy!";
+                                            setTimeout(() => {
+                                                copyButton.textContent = 'Copy';
+                                            }, 2000);
+                                        });
+                                    };
+                                  copyButton.textContent = 'Copy';
+                                  
+                                  // Create a container div to position the copy button
+                                   const containerDiv = document.createElement('div');
+                                   containerDiv.classList.add('highlight-code-container');
+                            containerDiv.appendChild(copyButton);
+                            // Insert the container div before the code block
+                             div.insertBefore(containerDiv, block.parentNode);
+
+                             // Move the code block into the container div
+                             containerDiv.appendChild(block.parentNode);
+                          }
+                      }else{
+                         block.className = "boxed-text";
+                      }
+                      
+                  });
+             if(final){
+                let aiName = responseBox.querySelector(".nameOfAi").innerText;
+                if(aiName != "Gemini Image" && aiName != "Dall-E 3"){
+                   replaceAltWithImages(responseBox);
+                }
+             }
+             minReqCharsInResponse = (totalResponse.length)*1.2;
+          }        
+       }
+
+       function copyText(event) {
+          var textToCopy = event.target.parentNode.querySelector(".textBox").innerText;
+          var textArea = document.createElement("textarea");
+          textArea.value = textToCopy;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textArea);
+          //alert("Copied the text: " + textToCopy);
+          
+       }
+
+       
+
+       function callGPT35(prompt) {
+           if (eventSource) {
+             eventSource.close();  // Close existing connection if any
+           }
+          
+           eventSource = new EventSource("/ai/gpt35/"+encodeURIComponent(prompt));  // Create a new EventSource
+           checkIfResponseStreamStarted(prompt, "GPT 3.5");
+          let newResponseBox;
+           let newResponseBoxAdded = false;
+            eventSource.onmessage = function(event) { 
+               if(newResponseBoxAdded === false){
+                  newResponseBox = addNewResponseBox(prompt, "GPT 3.5");
+                  newResponseBoxAdded = true;
+                  responseStreamStarted = true;
+              }
+               let endWord = "endfilewithcode0034";
+               if (!event.data.endsWith(endWord)) {
+                  addModifiedResponse(event.data, newResponseBox);
+               
+               } else {      
+                 eventSource.close();
+                 
+                  addModifiedResponse("", newResponseBox, true);
+                  //replaceAltWithImages(newDiv);
+               }             
+           };
+       }
+
+        function callGPT4(prompt) {
+               if (eventSource) {
+                 eventSource.close();  // Close existing connection if any
+               }
+               if(!imgUploadedByUser){
+                  eventSource = new EventSource("/ai/gpt4/"+encodeURIComponent(prompt));  // Create a new EventSource
+               }else{
+                   eventSource = new EventSource("/ai/gpt4vision/"+encodeURIComponent(prompt));
+               }
+               
+               checkIfResponseStreamStarted(prompt, "GPT 4");
+               let newResponseBox;
+               let newResponseBoxAdded = false;
+                eventSource.onmessage = function(event) { 
+                   if(newResponseBoxAdded === false){
+                      newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img width='40%' src='" + linkToUserImage +"' alt='prompt-image'>"), "GPT 4");
+                      newResponseBoxAdded = true;
+                      responseStreamStarted = true;
+                  }
+                   let endWord = "endfilewithcode0034";
+                   if (!event.data.endsWith(endWord)) {
+                      addModifiedResponse(event.data, newResponseBox);
+
+                   } else {      
+                     eventSource.close();
+                     addModifiedResponse("", newResponseBox, true);
+                      if(imgUploadedByUser){
+                        imgUploadedByUser = false;
+                        linkToUserImage = "";
+                        fileLabel.innerHTML = fileLabelIcon;
+                      }
+                     
+                      //replaceAltWithImages(newDiv);
+                   }             
+               };
+        }
+
+       function callGeminiPro(prompt) {
+          if (eventSource) {
+            eventSource.close();  // Close existing connection if any
+          }
+          if(!imgUploadedByUser){
+            eventSource = new EventSource("/ai/geminipro/"+encodeURIComponent(prompt));  // Create a new EventSource
+         }else{
+             eventSource = new EventSource("/ai/geminiprovision/"+encodeURIComponent(prompt))
+         }
+          checkIfResponseStreamStarted(prompt, "Gemini Pro");
+          let newResponseBox;
+          let newResponseBoxAdded = false;
+           eventSource.onmessage = function(event) { 
+              
+              if(newResponseBoxAdded === false){
+                 newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img width='40%' src='" + linkToUserImage +"' alt='prompt-image'>"), "Gemini Pro");
+                 newResponseBoxAdded = true;
+                 responseStreamStarted = true;
+             }
+              let endWord = "endfilewithcode0034";
+              if (!event.data.endsWith(endWord)) {
+                 addModifiedResponse(event.data, newResponseBox);
+               } else {      
+                  eventSource.close();
+                 addModifiedResponse("", newResponseBox, true);
+                 if(imgUploadedByUser){
+                    imgUploadedByUser = false;
+                    linkToUserImage = "";
+                    fileLabel.innerHTML = fileLabelIcon;
+                  }
+                  
+                  //replaceAltWithImages(newDiv);
+               }             
+            };
+      }
+
+        function callCopilot(prompt) {
+           if (eventSource) {
+             eventSource.close();  // Close existing connection if any
+           }
+           eventSource = new EventSource("/ai/copilot/"+encodeURIComponent(prompt));  // Create a new EventSource
+           checkIfResponseStreamStarted(prompt, "Copilot");
+           let newResponseBox;
+           let newResponseBoxAdded = false;
+            eventSource.onmessage = function(event) { 
+
+               if(newResponseBoxAdded === false){
+                  newResponseBox = addNewResponseBox(prompt, "Copilot");
+                  newResponseBoxAdded = true;
+                  responseStreamStarted = true;
+              }
+               let endWord = "endfilewithcode0034";
+               if (!event.data.endsWith(endWord)) {
+                  addModifiedResponse(event.data, newResponseBox);
+                } else {      
+                   eventSource.close();
+                   
+                   addModifiedResponse("", newResponseBox, true);
+                  //replaceAltWithImages(newDiv);
+                }             
+             };
+       }
+
+       function checkIfResponseStreamStarted(prompt, aiName){
+          setTimeout(() => {
+              if(eventSource.readyState === EventSource.CONNECTING || !responseStreamStarted){
+                 eventSource.close();
+                 addNewResponseBox(prompt, aiName).querySelector(".answer-box").querySelector(".textBox").innerHTML = "Error while getting response from "+aiName+". Please try again!"; 
+                 if(imgUploadedByUser){
+                   imgUploadedByUser = false;
+                   linkToUserImage = "";
+                   fileLabel.innerHTML = fileLabelIcon;
+                 }
+              }
+           },20000);
+       }
+       
+       function callDallE(prompt){                  
+          $.ajax({
+               url: 'ai/dalle3/'+encodeURIComponent(prompt),
+               type: 'GET',
+               success: function(response) {
+                  let newResponseBox = addNewResponseBox(prompt, "Dall-E 3");              
+                  newResponseBox.querySelector(".answer-box").querySelector(".textBox").innerHTML = response;
+               },
+               error: function(xhr, status, error) {                     
+                     let newResponseBox = addNewResponseBox(prompt, "Dall-E 3");              
+                     newResponseBox.querySelector(".answer-box").querySelector(".textBox").innerHTML = "Error while generating image<br>" +status + " " + error;
+               }
+           });         
+       }
+
+       
+       function callGeminiImage(prompt){
+           $.ajax({
+                url: 'ai/geminiimage/'+encodeURIComponent(prompt),
+                type: 'GET',
+                success: function(response) {
+                   let newResponseBox = addNewResponseBox(prompt, "Gemini Image");              
+                   newResponseBox.querySelector(".answer-box").querySelector(".textBox").innerHTML = response;
+                },
+                error: function(xhr, status, error) {                     
+                      let newResponseBox = addNewResponseBox(prompt, "Gemini Image");              
+                      newResponseBox.querySelector(".answer-box").querySelector(".textBox").innerHTML = "Error while generating image<br>" +status + " " + error;
+                }
+            });
+       }
+
+      function showToast(message = "No message", toastType = "info",  duration = 5){ 
+          if (!Object.keys(icon).includes(toastType)){
+              toastType = "info"; 
+          }
+          let box = document.createElement("div"); 
+          box.classList.add("toast", "toast-"+toastType); 
+          box.innerHTML = ` <div class="toast-content-wrapper"> 
+                            <div class="toast-icon"> 
+                            ${icon[toastType]} 
+                            </div> 
+                            <div class="toast-message">${message}</div> 
+                            <div class="toast-progress"></div> 
+                            </div>`; 
+          
+          box.querySelector(".toast-progress").style.animationDuration = 
+                  `${duration}s`; 
+          box.style.animation = `slideInRight 0.3s ease-in-out forwards, fadeOut 0.5s ease-in-out forwards ${duration}s`;
+          let toastAlready = document.body.querySelector(".toast"); 
+          if (toastAlready) { 
+              toastAlready.remove(); 
+          } 
+          let toastBox = document.getElementById("toast-overlay");
+          //toastBox.style = "height: auto; width: auto;";
+          toastBox.appendChild(box)
+          setTimeout(() => {
+             toastBox.innerHTML = "";
+          }, (duration * 1000) + 1000);
+      }
+
+       function deleteUserHistory() {
+          $.ajax({
+              url: '/deleteaihistory',
+              type: 'POST',
+              data: {q: 'delete'},
+              success: function(response) {
+               if(response == "History deleted successfully" | response == "History deleted from server but not found on database"){
+                  document.getElementById("resultsArea").innerHTML = "";
+                  if (welcomeBoxRemoved == true) {
+                     document.getElementById('container').style = "height: 70vh;display: flex;justify-content: center;align-items: center;";
+                     welcomeBoxRemoved = false;
+                  }  
+               }else{
+                  showToast("Error while deleting history ", "danger", 6)
+               }
+              },
+              error: function(xhr, status, error) {
+                  showToast("An error occured while starting new chat. Please try again!", "danger", 6)
+              }
+          });
+
+       }
+
+
+       function retrieveHistory(){
+          $.ajax({
+              url: 'ai/retrieveaihistory',
+              type: 'POST',
+              data: {q: 'retrieve'},
+              success: function(response) {
+                 try {
+                   const historyData = JSON.parse(response);
+                   history = historyData;
+                   if(history.length != 0){
+                       if (welcomeBoxRemoved == false) {
+                         document.getElementById('container').style.display = "none";
+                         welcomeBoxRemoved = true;
+                       }
+                   }
+                   let prompt = null;
+                   history.forEach(function (object, index){
+                       if(object['role'] == "user"){
+                           prompt = object['content'];
+                       }else{
+                           let response = object['content'];
+                           totalResponse = "";
+                           minReqCharsInResponse = 0;
+                           let newResponseBox = addNewResponseBox(prompt, object["aiName"]);
+                           addModifiedResponse(response, newResponseBox, true);
+                           
+                           //replaceAltWithImages(newDiv);
+                           
+                       }
+                   });
+                   if(history.length != 0){
+                       document.documentElement.scrollTop = document.documentElement.scrollHeight;
+                       document.body.scrollTop = document.body.scrollHeight;
+                   }
+                 } catch (error) {
+                    showToast("Error parsing history:"+ error, "danger", 6);
+                 }
+              },
+              error: function(xhr, status, error) {
+                  showToast("An error occured while retrieving history.", "danger", 6);
+              }
+          });
+
+       }
+
+      function replaceAltWithImages(mainDiv){
+          let images = mainDiv.querySelector(".answer-box").querySelector(".textBox").querySelectorAll("img");
+          images.forEach(async image => {
+            let query= image.getAttribute("alt");
+            
+            $.ajax({
+              url: "searchimages",
+              method: 'POST',
+              headers: {
+                    'Content-Type': 'application/json'
+                },
+              data: JSON.stringify({
+                q: "search",
+                query: query
+              }),
+              success: function (data) {
+                // Extract image URLs from the response
+                data = JSON.parse(data);
+                if(("error" in data) || !("items" in data)){
+                   showToast(data["error"], "danger", 6);                   
+                   return;
+                }
+                let listOfImages = [];
+                for(let i = 0; i <5; i++){
+                    listOfImages.push(data["items"][i]['link']);
+                }
+                objectOfImages[query] = listOfImages;
+                let imgDiv = document.createElement("div");
+                let content = '<img style="border-radius: 10px 10px 0 0;" width="100%" src="' + listOfImages[0] + '" alt="' + query + '"><div class="image-change-btn" onclick="loadAnotherImage(event, \'' + query + '\')">Load Another Image</div>';
+                imgDiv.innerHTML = content;
+                //imgDiv.style = "border-radius: 10px;";
+                image.replaceWith(imgDiv);
+              },
+              error: function (xhr, status, error) {
+                showToast('Images fetching error: '+ error,"danger", 7);
+              },
+            });
+          });
+      }
+
+      function loadAnotherImage(event, altId){
+          let listOfImages = objectOfImages[altId];
+          let img = event.target.parentNode.querySelector("img");
+          let initial = listOfImages.indexOf(img.src);
+          img.src = initial<4 ? listOfImages[initial+1] : listOfImages[0];
+      }
+
+      function setTextToTextarea(element){
+          var text = element.textContent.trim();
+         document.getElementById('promptBox').value = text;
+      }
+
+      // Set a cookie
+      function setCookie(name, value, days, path="") {
+          document.cookie = name + "=" + value + ";" + "max-age=" + days*24*60*60*1000 + "; path=/"+path;
+      }
+
+      // Get a cookie
+      function getCookie(cname) {
+         let name = cname + "=";
+           let decodedCookie = decodeURIComponent(document.cookie);
+           let ca = decodedCookie.split(';');
+           for(let i = 0; i <ca.length; i++) {
+             let c = ca[i];
+             while (c.charAt(0) == ' ') {
+               c = c.substring(1);
+             }
+             if (c.indexOf(name) == 0) {
+               return c.substring(name.length, c.length);
+             }
+           }
+           return "";
+      }
+
+      // Delete a cookie
+      function deleteCookie(name, path="") {
+          document.cookie = name + "=; max-age=-99999999;path=/"+path;
+      }
+    </script>
+  </body>
+</html>

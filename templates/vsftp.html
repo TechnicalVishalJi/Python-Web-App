@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div id="file-manager">
+        <h1>File Manager</h1>
+        <div id="current-path"></div>
+        <button onclick="createFile()">Create File</button>
+        <button onclick="createFolder()">Create Folder</button>
+        <button onclick="refreshList()">Refresh</button>
+        <ul id="file-list"></ul>
+    </div>
+
+    <div id="editor" style="display:none;">
+        <textarea id="file-content"></textarea>
+        <button onclick="saveFile()">Save</button>
+    </div>
+    <script>
+        $(document).ready(function() {
+            refreshList();
+
+            $('#file-list').on('click', 'li', function() {
+                let path = $(this).data('path');
+                if ($(this).data('type') === 'folder') {
+                    listFiles(path);
+                } else {
+                    editFile(path);
+                }
+            });
+        });
+
+        function refreshList() {
+            listFiles('/');
+        }
+
+        function listFiles(path) {
+            $.getJSON('vsftp/list', {path: path}, function(data) {
+                $('#current-path').text(data.path);
+                $('#file-list').empty();
+                data.folders.forEach(folder => {
+                    $('#file-list').append(`<li data-path="${data.path}/${folder}" data-type="folder">${folder}/</li>`);
+                });
+                data.files.forEach(file => {
+                    $('#file-list').append(`<li data-path="${data.path}/${file}" data-type="file">${file}</li>`);
+                });
+            });
+        }
+
+        function createFile() {
+            let name = prompt("Enter file name:");
+            if (name) {
+                $.post('vsftp/create', JSON.stringify({path: $('#current-path').text(), type: 'file', name: name}), function() {
+                    refreshList();
+                }, 'json');
+            }
+        }
+
+        function createFolder() {
+            let name = prompt("Enter folder name:");
+            if (name) {
+                $.post('/create', JSON.stringify({path: $('#current-path').text(), type: 'folder', name: name}), function() {
+                    refreshList();
+                }, 'json');
+            }
+        }
+
+        function editFile(path) {
+            $.getJSON('vsftp/edit', {path: path}, function(data) {
+                $('#file-content').val(data.content);
+                $('#editor').show().data('path', path);
+                $('#file-manager').hide();
+            });
+        }
+
+        function saveFile() {
+            let path = $('#editor').data('path');
+            let content = $('#file-content').val();
+            $.post('vsftp/edit', JSON.stringify({path: path, content: content}), function() {
+                $('#editor').hide();
+                $('#file-manager').show();
+                refreshList();
+            }, 'json');
+        }
+
+    </script>
+</body>
+</html>
