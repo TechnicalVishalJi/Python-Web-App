@@ -3,3 +3,4 @@ flask
 gunicorn
 Flask-SSE
 google-generativeai
+mysql
