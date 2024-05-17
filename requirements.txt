@@ -1,2 +1,5 @@
 g4f[all]
 flask
+gunicorn
+Flask-SSE
+generativeai
