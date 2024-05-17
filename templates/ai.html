@@ -3,8 +3,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
    <title>AI - Vishal Singh</title>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/stackoverflow-dark.min.css">
-   <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-   <script>eruda.init();</script>
    <style>
      
      @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
@@ -415,7 +413,9 @@
          <div class="dropdown-content" id="dropdownContent">
             <ul>
                <li>GPT 3.5</li>
+               <li>GPT 4o</li>
                <li>GPT 4</li>
+               <li>Gemini Flash</li>
                <li>Gemini Pro</li>
                <li>Copilot</li>
                <li>Dall-E 3</li>
@@ -625,7 +625,7 @@
            var prompt = promptBox.value;
            promptBox.value = "";
            let loading = document.getElementById("loadingResults");
-           loading.querySelector("#prompt").innerHTML = imgUploadedByUser ? prompt+"<br><br><img width='40%' src='" + linkToUserImage +"' alt='prompt-image'>" : prompt;
+           loading.querySelector("#prompt").innerHTML = imgUploadedByUser ? prompt+"<br><br><img style='width:40%; border-radius: 10px;' src='" + linkToUserImage +"' alt='prompt-image'>" : prompt;
            document.getElementById("loadingResults").style.display = "block";
            setTimeout(function () {
               loading.scrollIntoView({
@@ -639,6 +639,10 @@
               callGPT35(prompt);
            } else if (aiName == "GPT 4") {
               callGPT4(prompt);
+           } else if (aiName == "GPT 4o") {
+                callGPT4o(prompt);
+           } else if (aiName == "Gemini Flash") {
+                callGeminiFlash(prompt);
            } else if (aiName == "Gemini Pro") {
               callGeminiPro(prompt);
            } else if (aiName == "Copilot") {
@@ -781,7 +785,7 @@
                let newResponseBoxAdded = false;
                 eventSource.onmessage = function(event) { 
                    if(newResponseBoxAdded === false){
-                      newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img width='40%' src='" + linkToUserImage +"' alt='prompt-image'>"), "GPT 4");
+                      newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img style='width:40%; border-radius:10px;' src='" + linkToUserImage +"' alt='prompt-image'>"), "GPT 4");
                       newResponseBoxAdded = true;
                       responseStreamStarted = true;
                   }
@@ -803,6 +807,73 @@
                };
         }
 
+        function callGPT4o(prompt) {
+               if (eventSource) {
+                 eventSource.close();  // Close existing connection if any
+               }
+               if(!imgUploadedByUser){
+                  eventSource = new EventSource("/ai/gpt4o/"+encodeURIComponent(prompt));  // Create a new EventSource
+               }else{
+                   eventSource = new EventSource("/ai/gpt4vision/"+encodeURIComponent(prompt));
+               }
+
+               checkIfResponseStreamStarted(prompt, "GPT 4o");
+               let newResponseBox;
+               let newResponseBoxAdded = false;
+                eventSource.onmessage = function(event) { 
+                   if(newResponseBoxAdded === false){
+                      newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img style='width:40%; border-radius:10px;' src='" + linkToUserImage +"' alt='prompt-image'>"), "GPT 4o");
+                      newResponseBoxAdded = true;
+                      responseStreamStarted = true;
+                  }
+                   let endWord = "endfilewithcode0034";
+                   if (!event.data.endsWith(endWord)) {
+                      addModifiedResponse(event.data, newResponseBox);
+
+                   } else {      
+                     eventSource.close();
+                     addModifiedResponse("", newResponseBox, true);
+                      if(imgUploadedByUser){
+                        imgUploadedByUser = false;
+                        linkToUserImage = "";
+                        fileLabel.innerHTML = fileLabelIcon;
+                      }
+
+                      //replaceAltWithImages(newDiv);
+                   }             
+               };
+        }
+
+
+        function callGeminiFlash(prompt) {
+               if (eventSource) {
+                 eventSource.close();  // Close existing connection if any
+               }
+               
+               eventSource = new EventSource("/ai/geminiflash/"+encodeURIComponent(prompt));  // Create a new EventSource
+   
+               checkIfResponseStreamStarted(prompt, "Gemini Flash");
+               let newResponseBox;
+               let newResponseBoxAdded = false;
+                eventSource.onmessage = function(event) { 
+                   if(newResponseBoxAdded === false){
+                      newResponseBox = addNewResponseBox(prompt, "Gemini Flash");
+                      newResponseBoxAdded = true;
+                      responseStreamStarted = true;
+                  }
+                   let endWord = "endfilewithcode0034";
+                   if (!event.data.endsWith(endWord)) {
+                      addModifiedResponse(event.data, newResponseBox);
+
+                   } else {      
+                     eventSource.close();
+                     addModifiedResponse("", newResponseBox, true);                    
+                      //replaceAltWithImages(newDiv);
+                   }             
+               };
+        }
+
+
        function callGeminiPro(prompt) {
           if (eventSource) {
             eventSource.close();  // Close existing connection if any
@@ -818,7 +889,7 @@
            eventSource.onmessage = function(event) { 
               
               if(newResponseBoxAdded === false){
-                 newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img width='40%' src='" + linkToUserImage +"' alt='prompt-image'>"), "Gemini Pro");
+                 newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img style='width:40%; border-radius:10px;' src='" + linkToUserImage +"' alt='prompt-image'>"), "Gemini Pro");
                  newResponseBoxAdded = true;
                  responseStreamStarted = true;
              }

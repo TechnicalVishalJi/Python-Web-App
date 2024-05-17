@@ -167,6 +167,15 @@ def gpt4(prompt):
   stream = gpt4_generate_response_stream(prompt)  # Call the modified function
   return Response(stream_generator(stream, "GPT 4"), mimetype='text/event-stream')
 
+@app.route("/ai/gpt4o/<string:prompt>")
+def gpt4o(prompt):
+  global query
+  global totalResponse
+  query = prompt
+  totalResponse = ""
+  stream = gpt4o_generate_response_stream(prompt)  # Call the modified function
+  return Response(stream_generator(stream, "GPT 4o"), mimetype='text/event-stream')
+
 @app.route("/ai/gpt4vision/<string:prompt>")
 def gpt4vision(prompt):
   global query
@@ -189,6 +198,14 @@ def geminipro(prompt):
   totalResponse = ""
   stream = geminipro_generate_response_stream(prompt)  # Call the modified function
   return Response(stream_generator(stream, "Gemini Pro"), mimetype='text/event-stream')
+
+@app.route("/ai/geminiflash/<string:prompt>")
+def geminiflash(prompt):
+  global query
+  global totalResponse
+  query = prompt
+  totalResponse = ""
+  return Response(gemini15flash_generate_response_stream(prompt), mimetype='text/event-stream')
 
 @app.route("/ai/geminiprovision/<string:prompt>")
 def geminiprovision(prompt):
@@ -380,6 +397,21 @@ def gpt35_generate_response_stream(prompt):
     )
     return stream
 
+def gpt4o_generate_response_stream(prompt):
+    from g4f.client import Client
+    from g4f.Provider import OpenaiChat
+    client = Client(
+       provider=OpenaiChat
+    )
+
+    stream = client.chat.completions.create(
+      model ="gpt-4o",
+      messages = prepareHistoryForAi(prompt),     
+      #response_format = { "type": "json_object" },
+      stream=True
+    )
+    return stream
+
 def gpt4_generate_response_stream(prompt):
     from g4f.client import Client
     from g4f.Provider import OpenaiChat
@@ -421,6 +453,7 @@ def gpt4vision_generate_response_stream(prompt):
 def geminipro_generate_response_stream(prompt):
     from g4f.client import Client
     from g4f.Provider import GeminiPro
+    
     client = Client(
        api_key=os.environ["GEMINIAPI1"],
        provider=GeminiPro
@@ -429,12 +462,64 @@ def geminipro_generate_response_stream(prompt):
     stream = client.chat.completions.create(
       model = "gemini-1.5-pro-latest",
       messages = prepareHistoryForAi(prompt),
-      temperature = 1,
-      top_p = 0.8,
+      temperature = 0.5,
+      top_p = 1,
       top_k = 10,
       stream=True
     )
     return stream
+
+def gemini15flash_generate_response_stream(prompt):
+    import google.generativeai as genai
+
+    genai.configure(api_key=os.environ["GEMINIAPI1"])
+
+    generation_config = {
+      "temperature": 1,
+      "top_p": 0.95,
+      "top_k": 64,
+      "max_output_tokens": 8192,
+      "response_mime_type": "text/plain",
+    }
+    safety_settings = [
+      {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+      },
+      {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+      },
+      {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+      },
+      {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_MEDIUM_AND_ABOVE",
+      },
+    ]
+
+    model = genai.GenerativeModel(
+      model_name="gemini-1.5-flash-latest",
+      safety_settings=safety_settings,
+      generation_config=generation_config,
+    )
+
+    messages = prepareHistoryForAi(prompt, True)
+    
+    stream = model.generate_content(messages, stream=True)
+
+    for chunk in stream:
+        response = chunk.text
+        if response:
+          responseReplaced = response.replace('\n', '~n~')
+          yield f"data: {responseReplaced}\n\n"
+          global totalResponse
+          totalResponse += response
+    yield "data: endfilewithcode0034\n\n"
+    addNewHistoryToServer(query, "Gemini Flash", totalResponse)
+
 
 def geminiprovision_generate_response_stream(prompt):
     from g4f.client import Client
@@ -543,8 +628,19 @@ def removeAiName(history):
     newHist.append(dict)
   return newHist
 
-def prepareHistoryForAi(prompt):
+def prepareHistoryForAi(prompt, google=False):
     history = removeAiName(get_user_historyWithoutImageAi())
+    if google:
+        modifiedHistory = []
+        for object in history:
+            if(object["role"]== "assistant"):
+                modifiedHistory.append({"role": "model", "parts": [object["content"]]})
+            else:
+                modifiedHistory.append({"role": object["role"], "parts": [object["content"]]})
+        modifiedHistory.append({"role": "user", "parts": [prompt]})
+        #modifiedHistory.insert(0, {"role": "system", "parts": ["You are a helpful assistant."]})
+        return modifiedHistory
+    
     history.append({"role": "user", "content": prompt})
     history.insert(0, {"role": "system", "content": "You are a helpful assistant."})
     return history
@@ -553,7 +649,7 @@ def addNewHistoryToServer(prompt, ainame, response, imagePath=None):
     if(imagePath is None):
         append_to_user_history({"role": "user", "content": prompt})
     else:
-        append_to_user_history({"role": "user", "content": prompt+"<br><br><img width='40%' src='../uploads/"+imagePath+"'>"})
+        append_to_user_history({"role": "user", "content": prompt+"<br><br><img style='width:40%; border-radius:10px;' src='../uploads/"+imagePath+"'>"})
     append_to_user_history({"role": "assistant", "aiName":ainame, "content": response})
 
 def searchImages(query):
@@ -585,7 +681,7 @@ def searchImages(query):
 
 
 
-
+########## File Manager code starts ############
 
 
 from flask import jsonify
@@ -649,14 +745,28 @@ def move():
 
     return jsonify({"status": "success"})
 
+@app.route('/vsftp/copy', methods=['POST'])
+def copy():
+    data = request.get_json()
+    src = data.get('src')
+    dst = data.get('dst')
+
+    if os.path.isdir(src):
+        shutil.copytree(src, os.path.join(dst, os.path.basename(src)))
+    else:
+        shutil.copy2(src, os.path.join(dst, os.path.basename(src)))
+
+    return jsonify({"status": "success"})
+
 @app.route('/vsftp/edit', methods=['GET', 'POST'])
 def edit():
     if request.method == 'GET':
         path = request.args.get('path')
+
         with open(path, 'r') as file:
             content = file.read()
         return jsonify({"content": content})
-    
+
     elif request.method == 'POST':
         data = request.get_json()
         path = data.get('path')
@@ -671,8 +781,7 @@ def edit():
 
 
 
-
-
+########### File Manager code ends here ###########
 
 
 
