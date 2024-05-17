@@ -2,4 +2,4 @@ g4f[all]
 flask
 gunicorn
 Flask-SSE
-generativeai
+google-generativeai
