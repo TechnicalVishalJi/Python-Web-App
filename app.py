@@ -30,17 +30,17 @@ def index():
 
 @app.route('/ai')
 def ai():
-    #user_logged_in = request.cookies.get('userLoggedIn')
+    user_logged_in = request.cookies.get('userLoggedIn')
 
-    #if user_logged_in == 'YES':
+    if user_logged_in == 'YES':
         logo = url_for('static', filename='img/logo.png')
         copyBtn = url_for('static', filename='img/copy-btn.png')
         loadingDots = url_for('static', filename='img/loadingdots.gif')
         image_paths = [logo, copyBtn, loadingDots]
         return render_template('ai.html', image_paths=image_paths)
-   # else:
+    else:
         # User is not logged in
-    #    return render_template_string('You are not logged in and hence not allowed to access this page')  
+        return render_template_string('You are not logged in and hence not allowed to access this page')  
 
 @app.route('/about')
 def about():
