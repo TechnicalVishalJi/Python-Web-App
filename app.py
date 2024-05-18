@@ -695,7 +695,14 @@ BASE_DIR = os.path.abspath(".")
 
 @app.route('/vsftp')
 def vsftp():
-    return render_template('vsftp.html')
+    user_logged_in = request.cookies.get('userLoggedIn')
+
+    if user_logged_in == 'YES':
+        return render_template('vsftp.html')
+    else:
+        # User is not logged in
+        return render_template_string('You are not logged in and hence not allowed to access this page')  
+        
 
 @app.route('/vsftp/list', methods=['GET'])
 def list_files():
