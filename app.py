@@ -148,6 +148,10 @@ def searchimages():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route('/cron')
+def cron():
+    return render_template_string("<h1>Cron Done</h1>")
+    
 
 @app.route("/ai/gpt35/<string:prompt>")
 def gpt35(prompt):
