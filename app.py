@@ -388,10 +388,11 @@ def stream_generator(stream, aiName, imagePath=None):
   addNewHistoryToServer(query, aiName, totalResponse, imagePath)
     
 def gpt35_generate_response_stream(prompt):
+    fdef gpt35_generate_response_stream(prompt):
     from g4f.client import Client
-    from g4f.Provider import OpenaiChat
+    from g4f.Provider import Ecosia
     client = Client(
-       provider=OpenaiChat
+       provider=Ecosia
     )
     stream = client.chat.completions.create(
       model ="gpt-3.5-turbo",
@@ -403,9 +404,9 @@ def gpt35_generate_response_stream(prompt):
 
 def gpt4o_generate_response_stream(prompt):
     from g4f.client import Client
-    from g4f.Provider import OpenaiChat
+    from g4f.Provider import Liaobots
     client = Client(
-       provider=OpenaiChat
+       provider=Liaobots
     )
 
     stream = client.chat.completions.create(
@@ -414,6 +415,7 @@ def gpt4o_generate_response_stream(prompt):
       #response_format = { "type": "json_object" },
       stream=True
     )
+    
     return stream
 
 def gpt4_generate_response_stream(prompt):
