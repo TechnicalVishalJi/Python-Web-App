@@ -419,9 +419,9 @@ def gpt4o_generate_response_stream(prompt):
 
 def gpt4_generate_response_stream(prompt):
     from g4f.client import Client
-    from g4f.Provider import OpenaiChat
+    #from g4f.Provider import OpenaiChat
     client = Client(
-       provider=OpenaiChat
+       #provider=OpenaiChat
     )
     
     stream = client.chat.completions.create(
