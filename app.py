@@ -388,7 +388,6 @@ def stream_generator(stream, aiName, imagePath=None):
   addNewHistoryToServer(query, aiName, totalResponse, imagePath)
     
 def gpt35_generate_response_stream(prompt):
-    fdef gpt35_generate_response_stream(prompt):
     from g4f.client import Client
     from g4f.Provider import Ecosia
     client = Client(
