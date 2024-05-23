@@ -487,7 +487,7 @@
       let totalResponse = "";
       let minReqCharsInResponse = 0;     
       let responseBuffer = "";
-       let responseStreamStarted = false;
+       
        let imgUploadedByUser = false;
        let linkToUserImage = "";
        let icon = { 
@@ -755,7 +755,7 @@
                if(newResponseBoxAdded === false){
                   newResponseBox = addNewResponseBox(prompt, "GPT 3.5");
                   newResponseBoxAdded = true;
-                  responseStreamStarted = true;
+                  
               }
                let endWord = "endfilewithcode0034";
                if (!event.data.endsWith(endWord)) {
@@ -787,7 +787,7 @@
                    if(newResponseBoxAdded === false){
                       newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img style='width:40%; border-radius:10px;' src='" + linkToUserImage +"' alt='prompt-image'>"), "GPT 4");
                       newResponseBoxAdded = true;
-                      responseStreamStarted = true;
+                      
                   }
                    let endWord = "endfilewithcode0034";
                    if (!event.data.endsWith(endWord)) {
@@ -824,7 +824,7 @@
                    if(newResponseBoxAdded === false){
                       newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img style='width:40%; border-radius:10px;' src='" + linkToUserImage +"' alt='prompt-image'>"), "GPT 4o");
                       newResponseBoxAdded = true;
-                      responseStreamStarted = true;
+                      
                   }
                    let endWord = "endfilewithcode0034";
                    if (!event.data.endsWith(endWord)) {
@@ -859,7 +859,7 @@
                    if(newResponseBoxAdded === false){
                       newResponseBox = addNewResponseBox(prompt, "Gemini Flash");
                       newResponseBoxAdded = true;
-                      responseStreamStarted = true;
+                      
                   }
                    let endWord = "endfilewithcode0034";
                    if (!event.data.endsWith(endWord)) {
@@ -891,7 +891,7 @@
               if(newResponseBoxAdded === false){
                  newResponseBox = addNewResponseBox((!imgUploadedByUser ? prompt : prompt+"<br><br><img style='width:40%; border-radius:10px;' src='" + linkToUserImage +"' alt='prompt-image'>"), "Gemini Pro");
                  newResponseBoxAdded = true;
-                 responseStreamStarted = true;
+                 
              }
               let endWord = "endfilewithcode0034";
               if (!event.data.endsWith(endWord)) {
@@ -923,7 +923,7 @@
                if(newResponseBoxAdded === false){
                   newResponseBox = addNewResponseBox(prompt, "Copilot");
                   newResponseBoxAdded = true;
-                  responseStreamStarted = true;
+                  
               }
                let endWord = "endfilewithcode0034";
                if (!event.data.endsWith(endWord)) {
@@ -938,17 +938,15 @@
        }
 
        function checkIfResponseStreamStarted(prompt, aiName){
-          setTimeout(() => {
-              if(eventSource.readyState === EventSource.CONNECTING || !responseStreamStarted){
-                 eventSource.close();
-                 addNewResponseBox(prompt, aiName).querySelector(".answer-box").querySelector(".textBox").innerHTML = "Error while getting response from "+aiName+". Please try again!"; 
+            eventSource.onerror = function(event) {
+               eventSource.close();
+               addNewResponseBox(prompt, aiName).querySelector(".answer-box").querySelector(".textBox").innerHTML = "Error while getting response from " +aiName + ". Please try again!"; 
                  if(imgUploadedByUser){
                    imgUploadedByUser = false;
                    linkToUserImage = "";
                    fileLabel.innerHTML = fileLabelIcon;
                  }
-              }
-           },20000);
+            };
        }
        
        function callDallE(prompt){                  
