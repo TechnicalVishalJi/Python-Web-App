@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #file-list li { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="file-manager">
+        <h1>File Manager</h1>
+        <div id="current-path"></div>
+        <button onclick="createFile()">Create File</button>
+        <button onclick="createFolder()">Create Folder</button>
+        <button onclick="refreshList()">Refresh</button>
+        <button onclick="copyFile()">Copy</button>
+        <button onclick="moveFile()">Move</button>
+        <button onclick="deleteFile()">Delete</button>
+        <ul id="file-list"></ul>
+    </div>
+
+    <div id="editor" style="display:none;">
+        <textarea id="file-content" rows="20" cols="80"></textarea>
+        <button onclick="saveFile()">Save</button>
+        <button onclick="closeEditor()">Cancel</button>
+    </div>
+   <script>
+        let selectedFile = null;
+        let actionType = null;
+
+        $(document).ready(function() {
+            refreshList();
+
+            $('#file-list').on('click', 'li', function() {
+                let path = $(this).data('path');
+                if ($(this).data('type') === 'folder') {
+                    if (actionType) {
+                        performAction(path);
+                    } else {
+                        listFiles(path);
+                    }
+                } else {
+                    selectedFile = path;
+                    editFile(path);
+                }
+            });
+
+            $('#file-list').on('contextmenu', 'li', function(e) {
+                e.preventDefault();
+                selectedFile = $(this).data('path');
+                $('#file-list li').css('background-color', '');
+                $(this).css('background-color', '#ddd');
+            });
+        });
+
+        function refreshList() {
+            listFiles('/');
+        }
+
+        function listFiles(path) {
+            $.getJSON('vsftp/list', {path: path}, function(data) {
+                $('#current-path').text(data.path);
+                $('#file-list').empty();
+                data.folders.forEach(folder => {
+                    $('#file-list').append(`<li data-path="${data.path}/${folder}" data-type="folder">${folder}/</li>`);
+                });
+                data.files.forEach(file => {
+                    $('#file-list').append(`<li data-path="${data.path}/${file}" data-type="file">${file}</li>`);
+                });
+            });
+        }
+
+        function createFile() {
+            let name = prompt("Enter file name:");
+            if (name) {
+                $.ajax({
+                    url: 'vsftp/create',
+                    type: 'POST',
+                    data: JSON.stringify({path: $('#current-path').text(), type: 'file', name: name}),
+                    contentType: 'application/json',
+                    success: function() {
+                        refreshList();
+                    }
+                });
+            }
+        }
+
+                    function createFolder() {
+                        let name = prompt("Enter folder name:");
+                        if (name) {
+                            $.ajax({
+                                url: 'vsftp/create',
+                                type: 'POST',
+                                data: JSON.stringify({path: $('#current-path').text(), type: 'folder', name: name}),
+                                contentType: 'application/json',
+                                success: function() {
+                                    refreshList();
+                                }
+                            });
+                        }
+                    }
+
+                    function editFile(path) {
+                        $.getJSON('vsftp/edit', {path: path}, function(data) {
+                            $('#file-content').val(data.content);
+                            $('#editor').show().data('path', path);
+                            $('#file-manager').hide();
+                        });
+                    }
+
+                    function saveFile() {
+                        let path = $('#editor').data('path');
+                        let content = $('#file-content').val();
+                        $.ajax({
+                            url: 'vsftp/edit',
+                            type: 'POST',
+                            data: JSON.stringify({path: path, content: content}),
+                            contentType: 'application/json',
+                            success: function() {
+                                $('#editor').hide();
+                                $('#file-manager').show();
+                                refreshList();
+                            }
+                        });
+                    }
+
+                    function closeEditor() {
+                        $('#editor').hide();
+                        $('#file-manager').show();
+                    }
+
+                    function copyFile() {
+                        if (selectedFile) {
+                            actionType = 'copy';
+                            alert('Select destination folder to copy the file/folder.');
+                        }
+                    }
+
+                    function moveFile() {
+                        if (selectedFile) {
+                            actionType = 'move';
+                            alert('Select destination folder to move the file/folder.');
+                        }
+        }
+
+        function deleteFile() {
+            if (selectedFile) {
+                $.ajax({
+                    url: 'vsftp/delete',
+                    type: 'POST',
+                    data: JSON.stringify({path: selectedFile}),
+                    contentType: 'application/json',
+                    success: function() {
+                        refreshList();
+                    }
+                });
+            }
+        }
+
+        function performAction(destination) {
+            if (actionType && selectedFile) {
+                let actionUrl = `vsftp/${actionType}`;
+                $.ajax({
+                    url: actionUrl,
+                    type: 'POST',
+                    data: JSON.stringify({src: selectedFile, dst: destination}),
+                    contentType: 'application/json',
+                    success: function() {
+                        refreshList();
+                    }
+                });
+                selectedFile = null;
+                actionType = null;
+            }
+        }
+
+            
+        
+
+    </script>
+</body>
+</html>
