@@ -559,7 +559,7 @@ def copilot_generate_response_stream(prompt):
     )
 
     stream = client.chat.completions.create(
-      model ="Balanced",
+      model ="Copilot",
       messages = prepareHistoryForAi(prompt),
       stream=True
     )
