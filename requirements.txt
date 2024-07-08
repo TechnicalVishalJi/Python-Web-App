@@ -5,3 +5,4 @@ Flask-SSE
 google-generativeai
 mysql-connector-python
 Flask-Cors
+selenium
