@@ -17,9 +17,6 @@ import traceback
 
 app = Flask(__name__)
 
-pagespeed_url = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
-wordpress_url = "https://vishal.rf.gd"
-
 query = ""
 totalResponse = ""
 CORS(app, resources={r"/deleteaihistory": {"origins": "https://app.vishal.rf.gd"}})
@@ -60,42 +57,6 @@ def about():
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
-
-@app.route('/start-minecraft-server', methods=['GET'])
-def start_server():
-    result = start_minecraft_server()
-    if "Server started successfully" in result or "Server is already running" in result:
-        return result, 200  # HTTP 200 OK
-    else:
-        return result, 500  # HTTP 500 Internal Server Error
-
-@app.route('/login-heliohost')
-def login_heliohost():
-    result = login_to_heliohost()
-    if "Login successful" in result:
-        return result, 200  # HTTP 200 OK
-    else:
-        result = login_to_heliohost()
-        if "Login successful" in result:
-            return result, 200  # HTTP 200 OK
-        else:
-            return result, 500  # HTTP 500 Internal Server Error
-
-@app.route("/login-nightcafe")
-def nightcafe_task():
-    result = login_nightcafe()
-    if "Login and credit claim success" in result:
-        return result, 200  # HTTP 200 OK"
-    else:
-        return result, 500  # HTTP 500 Internal Server Error
-
-@app.route("/add-90-min-mc-server")
-def add_90_min_mc_server():
-    result = add_90_min_minecraft_server()
-    if "Time extended successfully" in result:
-        return result, 200
-    else:
-        return result, 500
 
 @app.route('/saveaihistory')
 def savehistory():
@@ -736,6 +697,44 @@ def searchImages(query):
 ######### Automation App code starts #############
 
 
+pagespeed_url = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
+wordpress_url = "https://vishal.rf.gd"
+
+@app.route('/start-minecraft-server', methods=['GET'])
+def start_server():
+    result = start_minecraft_server()
+    if "Server started successfully" in result or "Server is already running" in result:
+        return result, 200  # HTTP 200 OK
+    else:
+        return result, 500  # HTTP 500 Internal Server Error
+
+@app.route('/login-heliohost')
+def login_heliohost():
+    result = login_to_heliohost()
+    if "Login successful" in result:
+        return result, 200  # HTTP 200 OK
+    else:
+        result = login_to_heliohost()
+        if "Login successful" in result:
+            return result, 200  # HTTP 200 OK
+        else:
+            return result, 500  # HTTP 500 Internal Server Error
+
+@app.route("/login-nightcafe")
+def nightcafe_task():
+    result = login_nightcafe()
+    if "Login and credit claim success" in result:
+        return result, 200  # HTTP 200 OK"
+    else:
+        return result, 500  # HTTP 500 Internal Server Error
+
+@app.route("/add-90-min-mc-server")
+def add_90_min_mc_server():
+    result = add_90_min_minecraft_server()
+    if "Time extended successfully" in result:
+        return result, 200
+    else:
+        return result, 500
 
 def add_90_min_minecraft_server():
     # Setup WebDriver
