@@ -98,9 +98,9 @@ flask run
 
 ## Screenshots
 
-![Screenshot](images/pwa1.png)
-![Screenshot](images/pwa2.png)
-![Screenshot](images/pwa3.png)
+![Screenshot](images/pwa1.jpg)
+![Screenshot](images/pwa2.jpg)
+![Screenshot](images/pwa3.jpg)
 
 License
 
