@@ -1,6 +1,6 @@
 # AI Question Answering and Image Processing Website
 
-This is an AI-powered web application that can answer questions, analyze images to describe their content, and generate beautiful images from text prompts. Built using Python and Flask, and hosted on Render, it leverages the Gemini API to perform AI-driven tasks.
+This is an AI-powered web application that can answer questions, analyze images to describe their content, and generate beautiful images from text prompts. Built using Python and Flask, and hosted on Render, it leverages the Gemini API and GPT4Free Library to perform AI-driven tasks.
 
 ## Features
 
@@ -17,7 +17,7 @@ This is an AI-powered web application that can answer questions, analyze images 
 
 **Backend**: Python, Flask
 
-**AI & Image Processing**: Gemini API and library
+**AI & Image Processing**: Gemini API and GPT4Free library
 
 **Frontend**: HTML, CSS, JavaScript
 
